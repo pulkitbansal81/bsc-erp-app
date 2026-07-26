@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BSC Tiles ERP</title>
+
+<!-- ⚠️ SIRF YEH EK LINE BADALNI HAI: apna Apps Script web-app URL yahan paste karo (jo /exec par khatam hota hai) -->
+<script>const ERP_URL = "https://script.google.com/a/macros/bscinterio.com/s/AKfycbzhAKE86N1NjQUWmwdmKpG9UOLWw5YvO_Oego3vgiKbRwPgsDhrpE6omGvmhO1Hvhm2/exec";</script>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B1D33">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+html,body{margin:0;padding:0;height:100%;background:#0B1D33;overflow:hidden}
+#splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;font-family:system-ui,sans-serif;background:linear-gradient(160deg,#0B1D33 0%,#0F2B52 55%,#154A99 100%);z-index:10;transition:opacity .4s}
+#splash img{width:96px;height:96px;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+#splash h1{font-size:1.25rem;margin:0;font-weight:800;letter-spacing:-.01em}
+#splash p{margin:0;opacity:.65;font-size:.8rem}
+.spin{width:26px;height:26px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#err{display:none;max-width:280px;text-align:center;font-size:.82rem;background:rgba(192,57,43,.25);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:.7rem}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:none;background:#F4F7FB}
+</style>
+</head>
+<body>
+<div id="splash">
+<img src="icon-192.png" alt="">
+<h1>BSC Tiles ERP</h1>
+<div class="spin" id="sp"></div>
+<p id="msg">Loading…</p>
+<div id="err"></div>
+</div>
+<script>
+if("serviceWorker" in navigator){ try{ navigator.serviceWorker.register("sw.js"); }catch(e){} }
+if(!ERP_URL || ERP_URL.indexOf("http")!==0){
+document.getElementById("sp").style.display="none";
+document.getElementById("msg").textContent="Setup baaki hai";
+var er=document.getElementById("err"); er.style.display="block";
+er.textContent="index.html mein ERP_URL set nahi hua — line 8 par apna Apps Script /exec URL paste karo.";
+}else{
+var f=document.createElement("iframe");
+f.src=ERP_URL;
+f.allow="camera; microphone; geolocation; clipboard-write";
+f.onload=function(){ setTimeout(function(){ var s=document.getElementById("splash"); s.style.opacity="0"; setTimeout(function(){ s.style.display="none"; },450); }, 600); };
+document.body.appendChild(f);
+setTimeout(function(){ var s=document.getElementById("splash"); if(s.style.display!=="none"){ s.style.opacity="0"; setTimeout(function(){ s.style.display="none"; },450);} }, 12000);
+}
+</script>
+</body>
+</html>
