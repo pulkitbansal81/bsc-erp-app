@@ -6,7 +6,7 @@
 <title>BSC Tiles ERP</title>
 
 <!-- ⚠️ SIRF YEH EK LINE BADALNI HAI: apna Apps Script web-app URL yahan paste karo (jo /exec par khatam hota hai) -->
-<script>const ERP_URL = "https://script.google.com/macros/s/AKfycbzhAKE86N1NjQUWmwdmKpG9UOLWw5YvO_Oego3vgiKbRwPgsDhrpE6omGvmhO1Hvhm2/exec";</script>
+<script>const ERP_URL = "PASTE_YOUR_WEB_APP_URL_HERE";</script>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1D33">
@@ -38,18 +38,18 @@ iframe{position:fixed;inset:0;width:100%;height:100%;border:none;background:#F4F
 <div id="splash">
 <img src="icon-192.png" alt="">
 <h1>BSC Tiles ERP</h1>
-<p style="opacity:.45;font-size:.68rem;margin:0">v3</p>
+<p style="opacity:.45;font-size:.68rem;margin:0">v4</p>
 <div class="spin" id="sp"></div>
 <p id="msg">Loading…</p>
 <div id="err"></div>
 </div>
-<div id="exit-scrim">
+<div id="exit-scrim" onclick="if(event.target===this)bscExitNo()">
   <div id="exit-box">
     <h3>BSC ERP band karein?</h3>
     <p>App se bahar nikalna chahte ho?</p>
     <div class="row">
-      <button id="exit-no">Nahi</button>
-      <button id="exit-yes">Haan, band karo</button>
+      <button type="button" id="exit-no" onclick="bscExitNo()">Nahi</button>
+      <button type="button" id="exit-yes" onclick="bscExitYes()">Haan, band karo</button>
     </div>
   </div>
 </div>
@@ -69,38 +69,35 @@ document.body.appendChild(f);
 setTimeout(function(){ var s=document.getElementById("splash"); if(s.style.display!=="none"){ s.style.opacity="0"; setTimeout(function(){ s.style.display="none"; },450);} }, 12000);
 }
 
-/* ---- BACK BUTTON → "Exit karein?" dialog (v3) ----
- * Android sach: web app khud ko force-close nahi kar sakti.
- * Isliye "Haan" par guard hata dete hain + user ko ek back aur dabana hota hai. */
-(function(){
-var scrim=document.getElementById("exit-scrim");
-var allowExit=false;
-function arm(){ try{ history.pushState({bsc:1},""); }catch(e){} }
-arm();
-window.addEventListener("popstate", function(){
-if(allowExit) return;          // guard off hai — back ko jaane do (exit hoga)
-scrim.classList.add("on");     // dialog dikhao
-arm();                         // kadam wapas — abhi band nahi hona
-});
-function bind(id,fn){ var el=document.getElementById(id); el.addEventListener("click",fn); el.addEventListener("touchend",function(ev){ ev.preventDefault(); fn(); }); }
-bind("exit-no", function(){ scrim.classList.remove("on"); });
-bind("exit-yes", function(){
-scrim.classList.remove("on");
-allowExit=true;
+/* ---- BACK BUTTON → "Exit karein?" dialog (v4) ----
+ * Buttons ke handlers HTML mein inline hain (onclick attribute) — bulletproof.
+ * Android sach: web app khud ko force-close nahi kar sakti — isliye "Haan"
+ * par guard hatta hai + user ka agla back seedha exit karta hai. */
+var _bscAllowExit=false;
+function _bscArm(){ try{ history.pushState({bsc:1},""); }catch(e){} }
+function bscExitNo(){
+document.getElementById("exit-scrim").classList.remove("on");
+}
+function bscExitYes(){
+document.getElementById("exit-scrim").classList.remove("on");
+_bscAllowExit=true;
 try{ window.close(); }catch(e){}
 setTimeout(function(){
-// app abhi bhi khuli hai (Android ne close nahi hone diya) — guard hatao + user ko batao
 try{ history.back(); }catch(e){}
 var t=document.createElement("div");
 t.style.cssText="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#0B1D33;color:#fff;padding:10px 18px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;z-index:99;box-shadow:0 8px 26px rgba(0,0,0,.45);white-space:nowrap";
 t.textContent="Ab ek baar back dabao — app band ho jayegi 👋";
 document.body.appendChild(t);
 setTimeout(function(){ t.remove(); },3500);
-// 4 sec baad guard wapas — agar user ruk gaya to protection phir chalu
-setTimeout(function(){ allowExit=false; arm(); },4000);
+setTimeout(function(){ _bscAllowExit=false; _bscArm(); },4000); // ruk gaye to guard wapas
 },150);
+}
+_bscArm();
+window.addEventListener("popstate", function(){
+if(_bscAllowExit) return;
+document.getElementById("exit-scrim").classList.add("on");
+_bscArm();
 });
-})();
 </script>
 </body>
 </html>
