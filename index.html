@@ -6,7 +6,7 @@
 <title>BSC Tiles ERP</title>
 
 <!-- ⚠️ SIRF YEH EK LINE BADALNI HAI: apna Apps Script web-app URL yahan paste karo (jo /exec par khatam hota hai) -->
-<script>const ERP_URL = "https://script.google.com/a/macros/bscinterio.com/s/AKfycbzhAKE86N1NjQUWmwdmKpG9UOLWw5YvO_Oego3vgiKbRwPgsDhrpE6omGvmhO1Hvhm2/exec";</script>
+<script>const ERP_URL = "https://script.google.com/macros/s/AKfycbzhAKE86N1NjQUWmwdmKpG9UOLWw5YvO_Oego3vgiKbRwPgsDhrpE6omGvmhO1Hvhm2/exec";</script>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1D33">
@@ -22,6 +22,16 @@ html,body{margin:0;padding:0;height:100%;background:#0B1D33;overflow:hidden}
 @keyframes sp{to{transform:rotate(360deg)}}
 #err{display:none;max-width:280px;text-align:center;font-size:.82rem;background:rgba(192,57,43,.25);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:.7rem}
 iframe{position:fixed;inset:0;width:100%;height:100%;border:none;background:#F4F7FB}
+#exit-scrim{position:fixed;inset:0;background:rgba(11,29,51,.6);z-index:50;display:none;align-items:center;justify-content:center;padding:1.2rem}
+#exit-scrim.on{display:flex}
+#exit-box{background:#fff;border-radius:16px;padding:1.4rem 1.3rem;max-width:320px;width:100%;font-family:system-ui,sans-serif;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:pop .18s ease}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+#exit-box h3{margin:0 0 .3rem;color:#0B1D33;font-size:1.05rem}
+#exit-box p{margin:0 0 1rem;color:#5B6B80;font-size:.85rem}
+#exit-box .row{display:flex;gap:.6rem}
+#exit-box button{flex:1;border:none;border-radius:9px;padding:.7rem;font-size:.92rem;font-weight:700;cursor:pointer}
+#exit-no{background:#E8F0FB;color:#154A99}
+#exit-yes{background:#C0392B;color:#fff}
 </style>
 </head>
 <body>
@@ -31,6 +41,16 @@ iframe{position:fixed;inset:0;width:100%;height:100%;border:none;background:#F4F
 <div class="spin" id="sp"></div>
 <p id="msg">Loading…</p>
 <div id="err"></div>
+</div>
+<div id="exit-scrim">
+  <div id="exit-box">
+    <h3>BSC ERP band karein?</h3>
+    <p>App se bahar nikalna chahte ho?</p>
+    <div class="row">
+      <button id="exit-no">Nahi</button>
+      <button id="exit-yes">Haan, band karo</button>
+    </div>
+  </div>
 </div>
 <script>
 if("serviceWorker" in navigator){ try{ navigator.serviceWorker.register("sw.js"); }catch(e){} }
@@ -47,6 +67,27 @@ f.onload=function(){ setTimeout(function(){ var s=document.getElementById("splas
 document.body.appendChild(f);
 setTimeout(function(){ var s=document.getElementById("splash"); if(s.style.display!=="none"){ s.style.opacity="0"; setTimeout(function(){ s.style.display="none"; },450);} }, 12000);
 }
+
+/* ---- BACK BUTTON → "Exit karein?" dialog ---- */
+(function(){
+var scrim=document.getElementById("exit-scrim");
+var allowExit=false;
+// history mein ek extra kadam daal do — back dabane par app band hone ki jagah popstate milega
+try{ history.pushState({bsc:1},""); }catch(e){}
+window.addEventListener("popstate", function(){
+if(allowExit) return;               // user ne Haan bola tha — ab rukna nahi
+scrim.classList.add("on");          // dialog dikhao
+try{ history.pushState({bsc:1},""); }catch(e){} // kadam wapas daal do taaki app abhi band na ho
+});
+document.getElementById("exit-no").onclick=function(){ scrim.classList.remove("on"); };
+document.getElementById("exit-yes").onclick=function(){
+allowExit=true;
+scrim.classList.remove("on");
+try{ window.close(); }catch(e){}
+// window.close() na chale to history khaali karke app band karo
+try{ history.go(-2); }catch(e){}
+};
+})();
 </script>
 </body>
 </html>
