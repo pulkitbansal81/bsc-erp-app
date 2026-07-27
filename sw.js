@@ -1,6 +1,6 @@
 /* BSC ERP wrapper — minimal service worker (app install ke liye zaroori).
    Sirf shell (splash + icons) cache hota hai; ERP hamesha live internet se chalta hai. */
-const C = "bsc-shell-v1";
+const C = "bsc-shell-v2"; // v2: back-button exit dialog
 const SHELL = ["./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
